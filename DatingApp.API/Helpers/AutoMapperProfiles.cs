@@ -29,11 +29,7 @@ namespace DatingApp.API.Helpers
                     opt.ResolveUsing(d => d.DateOfBirth.CalculateAge());
                 });
             CreateMap<Photo, PhotosForDetailedDto>();
-        }
-
-        private void ForMember(Func<object, object> p1, Func<object, object> p2)
-        {
-            throw new NotImplementedException();
+            CreateMap<UserForUpdateDto, User>();
         }
     }
 }
