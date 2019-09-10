@@ -18,7 +18,7 @@ export class ListsComponent implements OnInit {
 
 
   constructor(private authService: AuthService, private userService: UserService, private route: ActivatedRoute,
-    private alertrify: AlertifyService) { }
+    private alertify: AlertifyService) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
