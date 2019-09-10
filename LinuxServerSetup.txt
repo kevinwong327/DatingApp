@@ -1,0 +1,142 @@
+*** LINUX SERVER SETUP USING A NEWLY CREATED DIGITAL OCEAN LAMP SERVER ***
+
+1. ssh root@ipaddressOfLinuxServer (follow instructions to change password)
+
+
+2. Set up mysql (password available from welcome message)
+
+mysql -u root -p
+
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'Pa$$w0rd';
+GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+
+3.  Install the dotnet runtime (follow instructions from here https://dotnet.microsoft.com/download/linux-package-manager/ubuntu18-04/runtime-current)
+
+4.  Configure Apache
+
+a2enmod proxy proxy_http proxy_html
+
+systemctl restart apache2
+
+5.  Configure the virtual host
+
+sudo nano /etc/apache2/sites-available/datingapp.conf
+
+<VirtualHost *:80>
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:5000/
+ProxyPassReverse / http://127.0.0.1:5000/
+
+ErrorLog /var/log/apache2/datingapp-error.log
+CustomLog /var/log/apache2/datingapp-access.log common
+
+</VirtualHost>
+
+6. Enable the site 
+
+a2ensite datingapp
+
+
+--- deploy the published app before going further ---
+
+7.  Add the deploy.reloaded extension to VS Code
+
+8.  Add a settings.json file in the .vscode folder and add the following:
+
+{
+    "deploy.reloaded": {
+        "packages": [
+            {
+                "name": "Version 1.0.0",
+                "description": "Package version 1.0.0",
+
+                "files": [
+                    "DatingApp.API/bin/Release/netcoreapp2.2/publish/**"
+                ]
+            }
+        ],
+
+        "targets": [
+            {
+                "type": "sftp",
+                "name": "Linux",
+                "description": "SFTP folder",
+
+                "host": "165.22.134.96", "port": 22,
+                "user": "root", "password": "yourpassword",
+
+                "dir": "/var/datingapp",
+                "mappings": {
+                    "DatingApp.API/bin/Release/netcoreapp2.2/publish/**": "/"
+                }
+            }
+        ]
+    }
+}
+
+8.  Publish the dotnet application:
+
+dotnet publish -c Release
+
+9.  Deploy the 'package' using the command palette - deploy package
+
+10.  Check the files are on the Linux server:
+
+ls /var/datingapp/
+
+11.  Set up the kestrel web service
+
+sudo nano /etc/systemd/system/kestrel-web.service
+
+// configuration without environment variables
+
+[Unit]
+Description=Kestrel service running on Ubuntu 18.04
+[Service]
+WorkingDirectory=/var/datingapp
+ExecStart=/usr/bin/dotnet /var/datingapp/DatingApp.API.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=datingapp
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+[Install]
+WantedBy=multi-user.target
+
+// configuration with environment variables
+
+[Unit]
+Description=Kestrel service running on Ubuntu 18.04
+[Service]
+WorkingDirectory=/var/datingapp
+ExecStart=/usr/bin/dotnet /var/datingapp/DatingApp.API.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=datingapp
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment='Cloudinary__CloudName=yourcloudname'
+Environment='Cloudinary__ApiSecret=yoursecret'
+Environment='Cloudinary__ApiKey=yourapikey'
+Environment='TokenKey=super secret key'
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl enable kestrel-web.service
+sudo systemctl start kestrel-web.service
+
+12.  Ensure the server is listening on Port 5000
+
+netstat -ntpl
+
+13.  Check the Mysql DB to ensure it is seeded with data:
+
+mysql -u appuser -p
+show databases;
+use datingapp;
+show tables;
+select * from users;
+
+14.  Browse to app on Linux server IP address.
