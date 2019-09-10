@@ -31,10 +31,8 @@ export class MemberListComponent implements OnInit {
     this.userParams.orderBy = 'lastActive';
   }
 
-
   pageChanged(event: any): void {
     this.pagination.currentPage = event.page;
-    //console.log(this.pagination.currentPage);
     this.loadUsers();
   }
 
