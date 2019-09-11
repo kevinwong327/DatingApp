@@ -60,13 +60,13 @@ namespace DatingApp.API.Data
             if (userParams.Likers)
             {
                 var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where( u=> userLikers.Contains(u.Id));
+                users = users.Where(u => userLikers.Contains(u.Id));
             }
 
             if (userParams.Likees)
             {
                 var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where( u=> userLikees.Contains(u.Id));
+                users = users.Where(u => userLikees.Contains(u.Id));
             }
 
             if (userParams.MinAge != 18 || userParams.MaxAge != 99)
@@ -102,7 +102,7 @@ namespace DatingApp.API.Data
 
             if (likers)
             {
-                return user.Likers.Where( u=> u.LikeeId == id).Select(i => i.LikerId);
+                return user.Likers.Where(u => u.LikeeId == id).Select(i => i.LikerId);
             }
             else
             {
@@ -113,6 +113,21 @@ namespace DatingApp.API.Data
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Message> GetMessage(int id)
+        {
+            return await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public Task<PagedList<Message>> GetMessagesForUser()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
