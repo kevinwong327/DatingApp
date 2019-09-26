@@ -43,10 +43,13 @@
     </ul>
   </div>
   <div class="card-footer">
-    <form action="">
-      <input type="text" class="form-control input-sm" placeholder="send a private message">
-      <div class="input-group-append">
-        <button class="btn btn-primary">send</button>
+    <form #messageForm="ngForm" (ngSubmit)="messageForm.valid && sendMessage()">
+      <div class="input-group">
+        <input type="text" [(ngModel)]="newMessage.content" name="content" required class="form-control input-sm"
+          placeholder="send a private message">
+        <div class="input-group-append">
+          <button class="btn btn-primary" [disabled]="!messageForm.valid">Send</button>
+        </div>
       </div>
     </form>
   </div>
