@@ -1,0 +1,32 @@
+Angular update to v6 to v8
+
+npm install -g @angular/cli
+
+// run ng update
+
+// Update all non angular packages to the latest versions
+
+npm install @auth0/angular-jwt@latest alertifyjs@latest bootstrap@latest bootswatch@latest core-js@latest ngx-bootstrap@latest ngx-gallery@latest rxjs@latest
+
+// Update all non angular dev dependancies to 
+
+npm install typescript@latest @types/jasmine@latest @types/jasminewd2@latest @types/node codelyzer@latest jasmine-core@latest jasmine-spec-reporter@latest karma@latest karma-chrome-launcher@latest karma-coverage-istanbul-reporter@latest karma-jasmine karma-jasmine-html-reporter@latest protractor@latest ts-node@latest tslint@latest --save-dev
+
+// Remove @angular/http as removed from v7 and above
+
+// run ng update again
+
+// should now see 2 in the list - cli and core.
+
+// Update these one at a time starting with the cli.
+
+ng update @angular/cli
+ng update @angular/core
+
+// check that any usage of ViewChild has been updated.
+
+// comment out import 'core-js/es7/reflect'; in polyfills ts
+
+// update tsconfig to target es2015
+
+// update error.intercepter.ts to use new 2.2 error responses.
